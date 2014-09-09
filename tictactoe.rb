@@ -4,11 +4,36 @@ class TicTacToe
 		#make this a loop later
 		@board = [1,2,3,4,5,6,7,8,9]
 		@available_positions = @board
+		@winning_positions = [[0,1,2], [1,4,8], [3,4,5], [6,7,8], [2,5,8], [0,3,6], [1,4,7], [2,4,6]]
+		@player_x_positions = []
+		@player_o_positions = []
 		@turns = 0
-		until @turns >= 9
+		@win = false
+		until @turns >= 9 || @win == true
 			turn
 		end
 		game_over
+	end
+
+	# refactor this
+	def win_game
+		if @board[0] == @board[1] && @board[0] == @board[2]
+			@win = true
+		elsif @board[0] == @board[4] && @board[0] == @board[8]
+			@win = true
+		elsif @board[3] == @board[4] && @board[3] == @board[5]
+			@win = true
+		elsif @board[6] == @board[7] && @board[6] == @board[8]
+			@win = true
+		elsif @board[2] == @board[5] && @board[2] == @board[8]
+			@win = true
+		elsif @board[0] == @board[3] && @board[0] == @board[6]
+			@win = true
+		elsif @board[1] == @board[4] && @board[1] == @board[7]
+			@win = true
+		elsif @board[2] == @board[4] && @board[2] == @board[6]
+			@win = true
+		end
 	end
 
 	def welcome
@@ -32,6 +57,7 @@ class TicTacToe
 		if @turns % 2 == 0
 			instructions("Player X")
 			x = gets.chomp.to_i
+			@player_x_positions.push(x)
 			if !@available_positions.include?(x)
 				puts "That is not a valid number. Try again!"
 				turn
@@ -43,6 +69,7 @@ class TicTacToe
 		else
 			instructions("Player O")
 			o = gets.chomp.to_i
+			@player_o_positions.push(o)
 			if !@available_positions.include?(o)
 				puts "That is not a valid number."
 				turn
@@ -52,11 +79,18 @@ class TicTacToe
 				@turns += 1
 			end
 		end
+		win_game
 	end
 	
 	def game_over
-		puts "It's a tie!"
-		exit(0)
+		display_board
+		if @turns >= 9 
+			puts "It's a tie!"
+			exit(0)
+		elsif @win == true
+			puts "You won!"
+			exit(0)
+		end
 	end
 end
 
