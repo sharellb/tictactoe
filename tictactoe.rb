@@ -4,9 +4,6 @@ class TicTacToe
 		#make this a loop later
 		@board = [1,2,3,4,5,6,7,8,9]
 		@available_positions = @board
-		@winning_positions = [[0,1,2], [1,4,8], [3,4,5], [6,7,8], [2,5,8], [0,3,6], [1,4,7], [2,4,6]]
-		@player_x_positions = []
-		@player_o_positions = []
 		@turns = 0
 		@win = false
 		until @turns >= 9 || @win == true
