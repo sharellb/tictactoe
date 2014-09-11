@@ -22,6 +22,7 @@ class TicTacToe
 				puts "Player X won!"
 			end
 		end
+		play_again
 	end
 	
 	def check_board #defines all of the winning conditions
@@ -87,6 +88,20 @@ class TicTacToe
 		end
 		check_board
 	end	
+
+	def play_again
+		puts "Do you want to play again (y/n)?"
+		play_response = gets.chomp
+		if play_response == "y"
+			game = TicTacToe.new
+			game.play
+		elsif play_response == "n"
+			puts "Thanks for playing!"
+		else
+			puts "You have to put y or n"
+			play_again
+		end
+	end
 end
 
 def save
