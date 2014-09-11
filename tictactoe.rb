@@ -1,19 +1,30 @@
+require 'yaml'
+
 class TicTacToe
 	def initialize
-		welcome
-		#make this a loop later
-		@board = [1,2,3,4,5,6,7,8,9]
+		@board = (1..9).to_a
 		@available_positions = @board
 		@turns = 0
 		@win = false
-		until @turns >= 9 || @win == true
-			turn
-		end
-		game_over
 	end
 
-	# refactor this
-	def win_game
+	def play
+		until @turns >= 9 || @win == true
+			take_turn
+		end
+		display_board
+		if @turns >= 9 
+			puts "It's a tie!"
+		elsif @win == true
+			if @turns % 2 == 0
+				puts "Player O won!"
+			else
+				puts "Player X won!"
+			end
+		end
+	end
+	
+	def check_board #defines all of the winning conditions
 		if @board[0] == @board[1] && @board[0] == @board[2]
 			@win = true
 		elsif @board[0] == @board[4] && @board[0] == @board[8]
@@ -33,11 +44,6 @@ class TicTacToe
 		end
 	end
 
-	def welcome
-		puts "Welcome to TicTacToe"
-	end
-
-	#make this a loop later
 	def display_board
 		puts "#{@board[0]}|#{@board[1]}|#{@board[2]}"
 		puts "#{@board[3]}|#{@board[4]}|#{@board[5]}"
@@ -47,48 +53,65 @@ class TicTacToe
 	def instructions(player_name)
 		puts "It's your turn #{player_name}."
 		puts "Choose your position by typing the number it represents on the board."
+		puts "or type 'save' to save the game."
 		display_board
 	end
 
-	def turn
+	def update_board(symbol)
+		position = gets.chomp
+
+		if position == 'save'
+			save
+			exit(0)
+		else
+			position = position.to_i
+		end
+
+		if !@available_positions.include?(position)
+			puts "That is not a valid number. Try again!"
+			take_turn
+		else
+			position -= 1
+			@board[position] = symbol
+			@turns += 1
+		end
+	end
+
+	def take_turn
 		if @turns % 2 == 0
 			instructions("Player X")
-			x = gets.chomp.to_i
-			@player_x_positions.push(x)
-			if !@available_positions.include?(x)
-				puts "That is not a valid number. Try again!"
-				turn
-			else
-				x = x - 1
-				@board[x] = "x"
-				@turns += 1
-			end
+			update_board("x")
 		else
 			instructions("Player O")
-			o = gets.chomp.to_i
-			@player_o_positions.push(o)
-			if !@available_positions.include?(o)
-				puts "That is not a valid number."
-				turn
-			else
-				o = o - 1
-				@board[o] = "o"
-				@turns += 1
-			end
+			update_board("o")
 		end
-		win_game
+		check_board
+	end	
+end
+
+def save
+	Dir.mkdir('games') unless Dir.exist? 'games'
+	name = 'games/saved.yaml'
+	File.open(name, 'w') do |file|
+		file.puts YAML.dump(self)
 	end
-	
-	def game_over
-		display_board
-		if @turns >= 9 
-			puts "It's a tie!"
-			exit(0)
-		elsif @win == true
-			puts "You won!"
-			exit(0)
-		end
+	puts "Game has been saved!"
+end
+
+def start_game
+	puts "Welcome to TicTacToe. Do you want to load an old game? (y/n)"
+	old_game = gets.chomp
+	if old_game == "y" #load old game
+		content = File.open('games/saved.yaml', 'r') {|file| file.read }
+		game = YAML.load(content) 
+		game.play
+	elsif old_game == "n" #start new game
+		game = TicTacToe.new
+		game.play
+	else
+		puts "That's not an option. Try again!"
+		start_game
 	end
 end
 
-TicTacToe.new
+start_game

@@ -1,0 +1,14 @@
+--- !ruby/object:TicTacToe
+board: &1
+- 1
+- x
+- 3
+- 4
+- 5
+- o
+- 7
+- 8
+- 9
+available_positions: *1
+turns: 2
+win: false
